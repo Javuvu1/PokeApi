@@ -10,18 +10,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.pokeapi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
-    val pokemonList by viewModel.pokemonList.collectAsState()
+    // Observa los datos de LiveData
+    val pokemonList by viewModel.pokemonList.observeAsState(emptyList())
+
+    // Ejecuta la carga de la lista de Pokémon cuando el Composable se monta
+    LaunchedEffect(Unit) {
+        viewModel.fetchPokemonList()
+    }
 
     Scaffold(
         topBar = {
@@ -29,12 +38,11 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
         }
     ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             // Imagen de fondo
             Image(
-                painter = rememberImagePainter(data = R.drawable.fondo),
+                painter = rememberAsyncImagePainter(model = R.drawable.fondo),
                 contentDescription = "Background",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -56,13 +64,13 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
     }
 }
 
-
-
 @Composable
 fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
-    val types by viewModel.pokemonTypes.collectAsState()
+    // Observa los tipos del Pokémon desde LiveData
+    val types by viewModel.pokemonTypes.observeAsState(emptyMap())
     val pokemonTypes = types[pokemon.id] ?: emptyList()
 
+    // Cargar los tipos solo si no están ya presentes
     LaunchedEffect(pokemon.id) {
         if (pokemon.id !in types) {
             viewModel.fetchPokemonTypes(pokemon.id)
@@ -74,7 +82,7 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
             .fillMaxWidth()
             .padding(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f) // Fondo translúcido
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -93,15 +101,13 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
             )
 
             // Nombre y Tipos
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = pokemon.name.replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                // Tipos
+                // Mostrar los tipos
                 if (pokemonTypes.isNotEmpty()) {
                     Row {
                         pokemonTypes.forEach { type ->
@@ -123,6 +129,4 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
         }
     }
 }
-
-
 
