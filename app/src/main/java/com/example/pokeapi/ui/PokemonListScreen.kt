@@ -24,10 +24,9 @@ import com.example.pokeapi.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
-    // Observa los datos de LiveData
+
     val pokemonList by viewModel.pokemonList.observeAsState(emptyList())
 
-    // Ejecuta la carga de la lista de Pokémon cuando el Composable se monta
     LaunchedEffect(Unit) {
         viewModel.fetchPokemonList()
     }
@@ -40,7 +39,6 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Imagen de fondo
             Image(
                 painter = rememberAsyncImagePainter(model = R.drawable.fondo),
                 contentDescription = "Background",
@@ -48,7 +46,6 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Lista de Pokémon
             LazyColumn(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -66,11 +63,9 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
 
 @Composable
 fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
-    // Observa los tipos del Pokémon desde LiveData
     val types by viewModel.pokemonTypes.observeAsState(emptyMap())
     val pokemonTypes = types[pokemon.id] ?: emptyList()
 
-    // Cargar los tipos solo si no están ya presentes
     LaunchedEffect(pokemon.id) {
         if (pokemon.id !in types) {
             viewModel.fetchPokemonTypes(pokemon.id)
@@ -90,9 +85,8 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(16.dp)
         ) {
-            // Imagen del Pokémon
             Image(
-                painter = rememberImagePainter(data = pokemon.imageUrl),
+                painter = rememberAsyncImagePainter(model = pokemon.imageUrl),
                 contentDescription = "${pokemon.name} image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -100,14 +94,12 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
                     .padding(end = 16.dp)
             )
 
-            // Nombre y Tipos
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = pokemon.name.replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                // Mostrar los tipos
                 if (pokemonTypes.isNotEmpty()) {
                     Row {
                         pokemonTypes.forEach { type ->
