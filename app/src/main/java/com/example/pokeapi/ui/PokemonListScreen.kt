@@ -2,29 +2,27 @@ package com.example.pokeapi.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokeapi.R
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
-
+fun PokemonListScreen(viewModel: PokemonViewModel = viewModel(), navController: NavController) {
     val pokemonList by viewModel.pokemonList.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
@@ -36,9 +34,7 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
             TopAppBar(title = { Text("PokeAPI") })
         }
     ) { padding ->
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = rememberAsyncImagePainter(model = R.drawable.fondo),
                 contentDescription = "Background",
@@ -49,12 +45,10 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
             LazyColumn(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
+                modifier = Modifier.padding(padding).fillMaxSize()
             ) {
                 items(pokemonList) { pokemon ->
-                    PokemonItem(pokemon, viewModel)
+                    PokemonItem(pokemon, viewModel, navController)
                 }
             }
         }
@@ -62,7 +56,7 @@ fun PokemonListScreen(viewModel: PokemonViewModel = viewModel()) {
 }
 
 @Composable
-fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
+fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel, navController: NavController) {
     val types by viewModel.pokemonTypes.observeAsState(emptyMap())
     val pokemonTypes = types[pokemon.id] ?: emptyList()
 
@@ -75,7 +69,8 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { navController.navigate("pokemonDetail/${pokemon.name}") }, // Navegación
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ),
@@ -121,4 +116,3 @@ fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel) {
         }
     }
 }
-
