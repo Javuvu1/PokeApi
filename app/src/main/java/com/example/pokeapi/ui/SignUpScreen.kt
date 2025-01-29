@@ -36,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 @Composable
 fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
     var email by remember { mutableStateOf("") }
@@ -119,4 +120,5 @@ suspend fun signUp(navigateToHome: () -> Unit, auth: AuthManager, email: String,
     else {
         Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
     }
+
 }

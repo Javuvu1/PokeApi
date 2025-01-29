@@ -38,6 +38,7 @@ import kotlinx.coroutines.withContext
 fun ForgotPasswordScreen(auth: AuthManager, navigateToLogin: () -> Unit) {
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
+
     val scope = rememberCoroutineScope()
 
     Column(
@@ -89,7 +90,7 @@ suspend fun forgotPassword(email: String, auth: AuthManager, context: Context, n
                     "Se ha enviado un correo para restablecer la contraseña",
                     Toast.LENGTH_SHORT
                 ).show()
-                navigateToLogin() // Vuelve a la pantalla de login
+                navigateToLogin()
             }
 
             is AuthRes.Error -> {

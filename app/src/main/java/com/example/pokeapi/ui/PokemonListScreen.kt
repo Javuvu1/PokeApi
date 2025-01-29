@@ -19,6 +19,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokeapi.R
 import androidx.navigation.NavController
+import com.example.pokeapi.ui.model.Pokemon
+import com.example.pokeapi.ui.model.PokemonViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

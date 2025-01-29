@@ -1,4 +1,4 @@
-package com.example.pokeapi.ui
+package com.example.pokeapi.ui.model
 
 import retrofit2.http.GET
 
