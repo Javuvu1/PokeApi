@@ -7,32 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,42 +43,29 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val googleSignLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
-        when (val account =
-            auth.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))) {
-            is AuthRes.Success -> {
-                val credential = GoogleAuthProvider.getCredential(account.data?.idToken, null)
-                scope.launch {
-                    val firebaseUser = auth.googleSignInCredential(credential)
-                    when (firebaseUser) {
-                        is AuthRes.Success -> {
-                            Toast.makeText(
-                                context,
-                                "Inicio de sesión correcto",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            navigateToHome()
-                        }
 
-                        is AuthRes.Error -> {
-                            Toast.makeText(
-                                context,
-                                "Error al iniciar sesión",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+    // Manejo de inicio de sesión con Google
+    val googleSignLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val account = auth.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))
+        if (account is AuthRes.Success) {
+            val credential = GoogleAuthProvider.getCredential(account.data?.idToken, null)
+            scope.launch {
+                val firebaseUser = auth.googleSignInCredential(credential)
+                if (firebaseUser is AuthRes.Success) {
+                    Toast.makeText(context, "Inicio de sesión correcto", Toast.LENGTH_SHORT).show()
+                    navigateToHome()
+                } else {
+                    Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
                 }
             }
-            is AuthRes.Error -> {
-                Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
-            }
+        } else {
+            Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
         }
     }
 
-
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "¿No tienes cuenta? Regístrate",
             modifier = Modifier
@@ -112,7 +79,8 @@ fun LoginScreen(
                 textDecoration = TextDecoration.Underline
             )
         )
-        Column (
+
+        Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -123,11 +91,10 @@ fun LoginScreen(
                 modifier = Modifier.size(100.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Firebase Android",
-                style = TextStyle(fontSize = 30.sp)
-            )
+            Text(text = "Firebase Android", style = TextStyle(fontSize = 30.sp))
             Spacer(modifier = Modifier.height(30.dp))
+
+            // Campo de entrada para el correo
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -135,6 +102,8 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             Spacer(modifier = Modifier.height(10.dp))
+
+            // Campo de entrada para la contraseña
             TextField(
                 value = password,
                 onValueChange = { password = it },
@@ -143,6 +112,8 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
             Spacer(modifier = Modifier.height(20.dp))
+
+            // Botón para iniciar sesión
             Button(
                 onClick = {
                     scope.launch {
@@ -150,12 +121,16 @@ fun LoginScreen(
                     }
                 },
                 shape = RoundedCornerShape(50),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(50.dp),
-
-                ) {
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
+                    .height(50.dp)
+            ) {
                 Text("Iniciar Sesión".uppercase())
             }
             Spacer(modifier = Modifier.height(20.dp))
+
+            // Enlace para recuperar la contraseña
             Text(
                 text = "¿Olvidaste tu contraseña?",
                 modifier = Modifier.clickable { navigateToForgotPassword() },
@@ -167,8 +142,11 @@ fun LoginScreen(
                 )
             )
             Spacer(modifier = Modifier.height(25.dp))
+
             Text(text = "-------- o --------", style = TextStyle(color = Color.Gray))
             Spacer(modifier = Modifier.height(25.dp))
+
+            // Botón de acceso como invitado
             SocialMediaButton(
                 onClick = {
                     scope.launch {
@@ -180,10 +158,10 @@ fun LoginScreen(
                 color = Color(0xFF363636)
             )
             Spacer(modifier = Modifier.height(15.dp))
+
+            // Botón de acceso con Google
             SocialMediaButton(
-                onClick = {
-                    auth.signInWithGoogle(googleSignLauncher)
-                },
+                onClick = { auth.signInWithGoogle(googleSignLauncher) },
                 text = "Continuar con Google",
                 icon = R.drawable.ic_google,
                 color = Color(0xFFF1F1F1)
@@ -192,66 +170,58 @@ fun LoginScreen(
     }
 }
 
+// Función para iniciar sesión anónimo
 suspend fun signAnonimous(auth: AuthManager, navigateToHome: () -> Unit, context: Context) {
-    val res = withContext(Dispatchers.IO) {
-        auth.signInAnonymously()
-    }
-    when (res) {
-        is AuthRes.Success -> {
-            Toast.makeText(context, "Inicio de sesión correcto", Toast.LENGTH_SHORT).show()
-            navigateToHome()
-        }
-        is AuthRes.Error -> {
-            Toast.makeText(context, res.errorMessage, Toast.LENGTH_SHORT).show()
-        }
+    val res = withContext(Dispatchers.IO) { auth.signInAnonymously() }
+    if (res is AuthRes.Success) {
+        Toast.makeText(context, "Inicio de sesión correcto", Toast.LENGTH_SHORT).show()
+        navigateToHome()
+    } else {
+        Toast.makeText(context, (res as AuthRes.Error).errorMessage, Toast.LENGTH_SHORT).show()
     }
 }
 
+// Función para iniciar sesión con correo y contraseña
 suspend fun signIn(email: String, password: String, context: Context, auth: AuthManager, navigateToHome: () -> Unit) {
     if (email.isNotEmpty() && password.isNotEmpty()) {
-        val result =
-            withContext(Dispatchers.IO) {
-                auth.signInWithEmailAndPassword(email, password)
-            }
-        when (result) {
-            is AuthRes.Success -> {
-                Toast.makeText(context, "Inicio de sesión correcto", Toast.LENGTH_SHORT).show()
-                navigateToHome()
-            }
-            is AuthRes.Error -> {
-                Toast.makeText(context, result.errorMessage, Toast.LENGTH_SHORT).show()
-            }
+        val result = withContext(Dispatchers.IO) { auth.signInWithEmailAndPassword(email, password) }
+        if (result is AuthRes.Success) {
+            Toast.makeText(context, "Inicio de sesión correcto", Toast.LENGTH_SHORT).show()
+            navigateToHome()
+        } else {
+            Toast.makeText(context, (result as AuthRes.Error).errorMessage, Toast.LENGTH_SHORT).show()
         }
-
-    } else{
+    } else {
         Toast.makeText(context, "Email y password tienen que estar rellenos", Toast.LENGTH_SHORT).show()
     }
 }
 
+// Composable para botones de redes sociales
 @Composable
-fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color, ) {
-    var click by remember { mutableStateOf(false) }
+fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color) {
     Surface(
         onClick = onClick,
-        modifier = Modifier.padding(start = 40.dp, end = 40.dp).clickable { click = !click },
         shape = RoundedCornerShape(50),
-        border = BorderStroke(width = 1.dp, color = if(icon == R.drawable.ic_incognito) color else Color.Gray),
-        color = color
+        border = BorderStroke(1.dp, if (icon == R.drawable.ic_incognito) color else Color.Gray),
+        color = color,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 40.dp)
+            .height(50.dp)
     ) {
         Row(
-            modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 painter = painterResource(id = icon),
-                modifier = Modifier.size(24.dp),
                 contentDescription = text,
+                modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "$text", color = if(icon == R.drawable.ic_incognito) Color.White else Color.Black)
-            click = true
+            Text(text = text, color = if (icon == R.drawable.ic_incognito) Color.White else Color.Black)
         }
     }
 }

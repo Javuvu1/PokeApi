@@ -3,25 +3,13 @@ package com.example.pokeapi.ui
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,11 +24,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 @Composable
 fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
+    // Estados para el email y la contraseña
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -54,11 +43,14 @@ fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Título de la pantalla
             Text(
                 text = "Crear cuenta",
                 style = TextStyle(fontSize = 40.sp)
             )
             Spacer(modifier = Modifier.height(20.dp))
+
+            // Campo de entrada para el correo
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -66,6 +58,8 @@ fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             Spacer(modifier = Modifier.height(20.dp))
+
+            // Campo de entrada para la contraseña
             TextField(
                 value = password,
                 onValueChange = { password = it },
@@ -73,9 +67,13 @@ fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
             Spacer(modifier = Modifier.height(30.dp))
+
+            // Botón para registrarse
             Button(
                 onClick = {
-                    scope.launch() { signUp(navigateToHome, auth, email, password, context) }
+                    scope.launch {
+                        signUp(navigateToHome, auth, email, password, context)
+                    }
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -85,6 +83,8 @@ fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
                 Text(text = "Registrarse")
             }
             Spacer(modifier = Modifier.height(40.dp))
+
+            // Texto para redirigir al inicio de sesión si ya tiene cuenta
             Text(
                 text = "¿Ya tienes cuenta? Inicia sesión",
                 style = TextStyle(
@@ -96,29 +96,29 @@ fun SignUpScreen(auth: AuthManager, navigateToHome: () -> Unit) {
                 modifier = Modifier.clickable { navigateToHome() }
             )
         }
-
     }
 }
 
+// Función suspendida para registrar un usuario en Firebase
 suspend fun signUp(navigateToHome: () -> Unit, auth: AuthManager, email: String, password: String, context: Context) {
     if (email.isNotEmpty() && password.isNotEmpty()) {
-        when (
-            val result = withContext(Dispatchers.IO){
-                auth.createUserWithEmailAndPassword(email, password)
-            }
-        ) {
+        val result = withContext(Dispatchers.IO) {
+            auth.createUserWithEmailAndPassword(email, password)
+        }
+
+        when (result) {
             is AuthRes.Success -> {
-                Toast.makeText(context, "Usuario creado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Usuario creado correctamente", Toast.LENGTH_SHORT).show()
                 navigateToHome()
             }
-
             is AuthRes.Error -> {
-                Toast.makeText(context, "Error al crear usuario", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error al crear usuario: ${result.errorMessage}", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(context, "Error inesperado. Intente nuevamente.", Toast.LENGTH_SHORT).show()
             }
         }
+    } else {
+        Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
     }
-    else {
-        Toast.makeText(context, "Llene todos los campos", Toast.LENGTH_SHORT).show()
-    }
-
 }
