@@ -1,4 +1,4 @@
-package com.example.pokeapi.ui
+package com.example.pokeapi.ui.screen
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

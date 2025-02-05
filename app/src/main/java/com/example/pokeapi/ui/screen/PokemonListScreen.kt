@@ -1,4 +1,4 @@
-package com.example.pokeapi.ui
+package com.example.pokeapi.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,8 +19,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokeapi.R
 import androidx.navigation.NavController
-import com.example.pokeapi.ui.model.Pokemon
-import com.example.pokeapi.ui.model.PokemonViewModel
+import com.example.pokeapi.model.Pokemon
+import com.example.pokeapi.model.PokemonViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

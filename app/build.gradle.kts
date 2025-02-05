@@ -81,7 +81,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.firebase.bom))
     implementation (libs.play.services.auth)
-    implementation (libs.firebase.auth)  // Y esta también si no la tienes
+    implementation (libs.firebase.auth)
+
+
 
 
 

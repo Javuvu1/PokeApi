@@ -1,4 +1,4 @@
-package com.example.pokeapi.ui.theme
+package com.example.pokeapi.ui.screen
 
 import android.content.Context
 import android.widget.Toast
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pokeapi.R
 import com.example.pokeapi.ui.AuthManager
 import com.example.pokeapi.ui.AuthRes
+import com.example.pokeapi.ui.theme.Purple40
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
@@ -73,7 +74,7 @@ fun LoginScreen(
                 .padding(bottom = 40.dp)
                 .clickable { navigateToSignUp() },
             style = TextStyle(
-                color = Purple40,
+                color = Color.Black,
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default,
                 textDecoration = TextDecoration.Underline
@@ -86,12 +87,12 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_firebase),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Firebase",
                 modifier = Modifier.size(100.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Firebase Android", style = TextStyle(fontSize = 30.sp))
+            Text(text = "Pokédex", style = TextStyle(fontSize = 30.sp))
             Spacer(modifier = Modifier.height(30.dp))
 
             // Campo de entrada para el correo

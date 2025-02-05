@@ -1,4 +1,4 @@
-package com.example.pokeapi.ui.theme
+package com.example.pokeapi.ui.screen
 
 import android.content.Context
 import android.widget.Toast
@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokeapi.ui.AuthManager
 import com.example.pokeapi.ui.AuthRes
+import com.example.pokeapi.ui.theme.Purple40
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

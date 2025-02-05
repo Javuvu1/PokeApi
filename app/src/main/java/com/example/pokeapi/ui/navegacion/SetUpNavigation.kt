@@ -6,11 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.pokeapi.ui.AuthManager
-import com.example.pokeapi.ui.SignUpScreen
-import com.example.pokeapi.ui.theme.ForgotPasswordScreen
-import com.example.pokeapi.ui.theme.LoginScreen
-import com.example.pokeapi.ui.PokemonListScreen
-import com.example.pokeapi.ui.model.PokemonViewModel
+import com.example.pokeapi.ui.screen.SignUpScreen
+import com.example.pokeapi.ui.screen.ForgotPasswordScreen
+import com.example.pokeapi.ui.screen.LoginScreen
+import com.example.pokeapi.ui.screen.PokemonListScreen
+import com.example.pokeapi.model.PokemonViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
