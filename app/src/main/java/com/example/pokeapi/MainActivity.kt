@@ -1,21 +1,38 @@
 package com.example.pokeapi
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.lifecycleScope
+import com.example.pokeapi.model.Pokemon
 import com.example.pokeapi.ui.AuthManager
-import com.example.pokeapi.ui.navigation.SetUpNavigation
+import com.example.pokeapi.ui.navegacion.Navegacion
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.InputStream
+
 
 class MainActivity : ComponentActivity() {
+    val auth = AuthManager(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val auth = AuthManager(applicationContext) // Pasamos el contexto
-
         setContent {
-            val navController = rememberNavController()
-            SetUpNavigation(navController = navController, auth = auth)
+            Navegacion(auth)
         }
+
+
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        auth.signOut()
+    }
+
 }

@@ -20,101 +20,101 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokeapi.R
 import androidx.navigation.NavController
 import com.example.pokeapi.model.Pokemon
-import com.example.pokeapi.model.PokemonViewModel
+//import com.example.pokeapi.model.PokemonViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PokemonListScreen(viewModel: PokemonViewModel = viewModel(), navController: NavController) {
-    val pokemonList by viewModel.pokemonList.observeAsState(emptyList())
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchPokemonList()
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("PokeAPI") })
-        }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                painter = rememberAsyncImagePainter(model = R.drawable.fondo),
-                contentDescription = "Background",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            LazyColumn(
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(padding).fillMaxSize()
-            ) {
-                items(pokemonList) { pokemon ->
-                    PokemonItem(pokemon, viewModel, navController)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel, navController: NavController) {
-    val types by viewModel.pokemonTypes.observeAsState(emptyMap())
-    val pokemonTypes = types[pokemon.id] ?: emptyList()
-
-    LaunchedEffect(pokemon.id) {
-        if (pokemon.id !in types) {
-            viewModel.fetchPokemonTypes(pokemon.id)
-        }
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { navController.navigate("pokemonDetail/${pokemon.name}") }, // Navegación
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageUrl),
-                contentDescription = "${pokemon.name} image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(64.dp)
-                    .padding(end = 16.dp)
-            )
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                if (pokemonTypes.isNotEmpty()) {
-                    Row {
-                        pokemonTypes.forEach { type ->
-                            Text(
-                                text = type.replaceFirstChar { it.uppercase() },
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                        shape = MaterialTheme.shapes.small
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun PokemonListScreen(viewModel: PokemonViewModel = viewModel(), navController: NavController) {
+//    val pokemonList by viewModel.pokemonList.observeAsState(emptyList())
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.fetchPokemonList()
+//    }
+//
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(title = { Text("PokeAPI") })
+//        }
+//    ) { padding ->
+//        Box(modifier = Modifier.fillMaxSize()) {
+//            Image(
+//                painter = rememberAsyncImagePainter(model = R.drawable.fondo),
+//                contentDescription = "Background",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier.fillMaxSize()
+//            )
+//
+//            LazyColumn(
+//                contentPadding = PaddingValues(8.dp),
+//                verticalArrangement = Arrangement.spacedBy(8.dp),
+//                modifier = Modifier.padding(padding).fillMaxSize()
+//            ) {
+//                items(pokemonList) { pokemon ->
+//                    PokemonItem(pokemon, viewModel, navController)
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun PokemonItem(pokemon: Pokemon, viewModel: PokemonViewModel, navController: NavController) {
+//    val types by viewModel.pokemonTypes.observeAsState(emptyMap())
+//    val pokemonTypes = types[pokemon.id] ?: emptyList()
+//
+//    LaunchedEffect(pokemon.id) {
+//        if (pokemon.id !in types) {
+//            viewModel.fetchPokemonTypes(pokemon.id)
+//        }
+//    }
+//
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//            .clickable { navController.navigate("pokemonDetail/${pokemon.name}") }, // Navegación
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+//        ),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+//    ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier.padding(16.dp)
+//        ) {
+//            Image(
+//                painter = rememberAsyncImagePainter(model = pokemon.imageUrl),
+//                contentDescription = "${pokemon.name} image",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .size(64.dp)
+//                    .padding(end = 16.dp)
+//            )
+//
+//            Column(modifier = Modifier.weight(1f)) {
+//                Text(
+//                    text = pokemon.name.replaceFirstChar { it.uppercase() },
+//                    style = MaterialTheme.typography.bodyLarge
+//                )
+//
+//                if (pokemonTypes.isNotEmpty()) {
+//                    Row {
+//                        pokemonTypes.forEach { type ->
+//                            Text(
+//                                text = type.replaceFirstChar { it.uppercase() },
+//                                style = MaterialTheme.typography.bodySmall,
+//                                modifier = Modifier
+//                                    .padding(end = 8.dp)
+//                                    .background(
+//                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+//                                        shape = MaterialTheme.shapes.small
+//                                    )
+//                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
