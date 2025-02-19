@@ -57,256 +57,237 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.pokeapi.R
 import com.example.pokeapi.data.FirestoreManager
+import com.example.pokeapi.model.Movimiento
 import com.example.pokeapi.ui.AuthManager
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun ScreenDetalle(
-//    idPokemon: String,
-//    auth: AuthManager,
-//    firestore: FirestoreManager,
-//    navigateToLogin: () -> Unit,
-//) {
-//    val user = auth.getCurrentUser()
-//    val factoryInicio = InicioViewModelFactory(firestore)
-//    val inicioViewModel = viewModel(InicioViewModel::class.java, factory = factoryInicio)
-//
-//    val factoryDetalle = DetalleViewModelFactory(firestore, idPokemon)
-//    val detalleViewModel = viewModel(DetalleViewModel::class.java, factory = factoryDetalle)
-//
-//    val pokemon by inicioViewModel.pokemon.collectAsState()
-//    val uiStateInicio by inicioViewModel.uiState.collectAsState()
-//    val uiStateDetalle by detalleViewModel.uiState.collectAsState()
-//
-//    LaunchedEffect(idPokemon) {
-//        inicioViewModel.getPokemonById(idPokemon)
-//    }
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Row(
-//                        horizontalArrangement = Arrangement.Start,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        if (user?.photoUrl != null) {
-//                            AsyncImage(
-//                                model = ImageRequest.Builder(LocalContext.current)
-//                                    .data(user?.photoUrl)
-//                                    .crossfade(true)
-//                                    .build(),
-//                                contentDescription = "Imagen",
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .clip(CircleShape)
-//                                    .size(40.dp)
-//                            )
-//                        } else {
-//                            Image(
-//                                painter = painterResource(R.drawable.ic_usuario),
-//                                contentDescription = "Foto de perfil por defecto",
-//                                modifier = Modifier
-//                                    .padding(end = 8.dp)
-//                                    .size(40.dp)
-//                                    .clip(CircleShape)
-//                            )
-//
-//                        }
-//                        Spacer(modifier = Modifier.width(10.dp))
-//                        Column {
-//                            Text(
-//                                text = user?.displayName ?: "Anónimo",
-//                                fontSize = 20.sp,
-//                                maxLines = 1,
-//                                overflow = TextOverflow.Ellipsis
-//                            )
-//                            Text(
-//                                text = user?.email ?: "Sin correo",
-//                                fontSize = 12.sp,
-//                                maxLines = 1,
-//                                overflow = TextOverflow.Ellipsis
-//                            )
-//                        }
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color(
-//                        ContextCompat.getColor(
-//                            LocalContext.current,
-//                            R.color.gris_oscuro
-//                        )
-//                    )
-//                ),
-//                actions = {
-//                    IconButton(onClick = {
-//                        inicioViewModel.onLogoutSelected()
-//                    }) {
-//                        Icon(
-//                            Icons.AutoMirrored.Outlined.ExitToApp,
-//                            contentDescription = "Cerrar sesión"
-//                        )
-//                    }
-//                }
-//            )
-//        },
-//        floatingActionButton = {
-//            FloatingActionButton(
-//                onClick = { detalleViewModel.onAddProfesorSelected() },
-//                containerColor = Color.Gray
-//            ) {
-//                Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir profesor")
-//            }
-//        }
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(it)
-//        ) {
-//            Column(modifier = Modifier.padding(8.dp)) {
-//                Text("Lista de profesores de la pokemon ${pokemon?.nombre}",  style = TextStyle(fontSize = 24.sp))
-//                Spacer(modifier = Modifier.height(10.dp))
-//            }
-//
-//            if (uiStateInicio.showLogoutDialog) {
-//                LogoutDialog(
-//                    onDismiss = { inicioViewModel.dismisShowLogoutDialog() },
-//                    onConfirm = {
-//                        auth.signOut()
-//                        navigateToLogin()
-//                        inicioViewModel.dismisShowLogoutDialog()
-//                    }
-//                )
-//            }
-//
-//            if (uiStateDetalle.showAddProfesorDialog) {
-//                AddProfesorDialog(
-//                    onProfesorAdded = { profesor ->
-//                        detalleViewModel.addProfesor(
-//                            Profesor(
-//                                id = "",
-//                                pokemonId = pokemon?.id,
-//                                userId = auth.getCurrentUser()?.uid,
-//                                profesor.nombre ?: "",
-//                                profesor.apellidos ?: "",
-//                                profesor.email ?: ""
-//                            )
-//                        )
-//                        detalleViewModel.dismisShowAddProfesorDialog()
-//                    },
-//                    onDialogDismissed = { detalleViewModel.dismisShowAddProfesorDialog() },
-//                    auth
-//                )
-//            }
-//
-//            if (!uiStateDetalle.profesores.isNullOrEmpty()) {
-//
-//
-//                LazyColumn(
-//                    modifier = Modifier.padding(top = 60.dp)
-//                ) {
-//                    items(uiStateDetalle.profesores) { profesor ->
-//                        ProfesorItem(
-//                            profesor = profesor,
-//                            deleteProfesor = {
-//                                detalleViewModel.deleteProfesoraById(
-//                                    profesor.id ?: ""
-//                                )
-//                            },
-//                            updateProfesor = {
-//                                detalleViewModel.updateProfesor(it)
-//                            }
-//                        )
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                    }
-//                }
-//            } else {
-//                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                    Text("No hay datos")
-//                }
-//            }
-//        }
-//    }
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScreenDetalle(
+    idPokemon: String,
+    auth: AuthManager,
+    firestore: FirestoreManager,
+    navigateToLogin: () -> Unit,
+) {
+    val user = auth.getCurrentUser()
+    val factoryInicio = InicioViewModelFactory(firestore)
+    val inicioViewModel = viewModel(InicioViewModel::class.java, factory = factoryInicio)
 
-//@Composable
-//fun ProfesorItem(
-//    profesor: Profesor,
-//    deleteProfesor: () -> Unit,
-//    updateProfesor: (Profesor) -> Unit,
-//) {
-//
-//    var showDeleteProfesorDialog by remember { mutableStateOf(false) }
-//    var showUpdateProfesorDialog by remember { mutableStateOf(false) }
-//
-//    if (showDeleteProfesorDialog) {
-//        DeleteProfesorDialog(
+    val factoryDetalle = DetalleViewModelFactory(firestore, idPokemon)
+    val detalleViewModel = viewModel(DetalleViewModel::class.java, factory = factoryDetalle)
+
+    val pokemon by inicioViewModel.pokemon.collectAsState()
+    val uiStateInicio by inicioViewModel.uiState.collectAsState()
+    val uiStateDetalle by detalleViewModel.uiState.collectAsState()
+
+    LaunchedEffect(idPokemon) {
+        inicioViewModel.getPokemonById(idPokemon)
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = user?.displayName ?: "Anónimo",
+                                fontSize = 20.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = user?.email ?: "Sin correo",
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(
+                        ContextCompat.getColor(
+                            LocalContext.current,
+                            R.color.teal_200
+                        )
+                    )
+                ),
+                actions = {
+                    IconButton(onClick = {
+                        inicioViewModel.onLogoutSelected()
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ExitToApp,
+                            contentDescription = "Cerrar sesión"
+                        )
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { detalleViewModel.onAddMovimientoSelected() },
+                containerColor = Color.Gray
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir movimiento")
+            }
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text("Lista de movimientos del pokemon ${pokemon?.name}",  style = TextStyle(fontSize = 24.sp))
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            if (uiStateInicio.showLogoutDialog) {
+                LogoutDialog(
+                    onDismiss = { inicioViewModel.dismisShowLogoutDialog() },
+                    onConfirm = {
+                        auth.signOut()
+                        navigateToLogin()
+                        inicioViewModel.dismisShowLogoutDialog()
+                    }
+                )
+            }
+
+            if (uiStateDetalle.showAddMovimientoDialog) {
+                AddMovimientoDialog(
+                    onMovimientoAdded = { movimiento ->
+                        detalleViewModel.addMovimiento(
+                            Movimiento(
+                                id = "",
+                                pokemonId = pokemon?.id,
+                                userId = auth.getCurrentUser()?.uid,
+                                movimiento.nombre ?: "",
+                                movimiento.tipo ?: "",
+                                movimiento.clase ?: "",
+                                movimiento.potencia ?: 0,
+                                movimiento.precision ?: 0,
+                                movimiento.pp ?: 0
+                            )
+                        )
+                        detalleViewModel.dismisShowAddMovimientoDialog()
+                    },
+                    onDialogDismissed = { detalleViewModel.dismisShowAddMovimientoDialog() },
+                    auth
+                )
+            }
+
+            if (!uiStateDetalle.movimientos.isNullOrEmpty()) {
+
+
+                LazyColumn(
+                    modifier = Modifier.padding(top = 60.dp)
+                ) {
+                    items(uiStateDetalle.movimientos) { movimiento ->
+                        MovimientoItem(
+                            movimiento = movimiento,
+                            deleteMovimiento = {
+                                detalleViewModel.deleteMovimientoaById(
+                                    movimiento.id ?: ""
+                                )
+                            },
+                            updateMovimiento = {
+                                detalleViewModel.updateMovimiento(it)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No hay datos")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MovimientoItem(
+    movimiento: Movimiento,
+    deleteMovimiento: () -> Unit,
+    updateMovimiento: (Movimiento) -> Unit,
+) {
+
+    var showDeleteMovimientoDialog by remember { mutableStateOf(false) }
+    var showUpdateMovimientoDialog by remember { mutableStateOf(false) }
+
+//    if (showDeleteMovimientoDialog) {
+//        DeleteMovimientoDialog(
 //            onConfirmDelete = {
-//                deleteProfesor()
-//                showDeleteProfesorDialog = false
+//                deleteMovimiento()
+//                showDeleteMovimientoDialog = false
 //            },
-//            onDismiss = { showDeleteProfesorDialog = false }
+//            onDismiss = { showDeleteMovimientoDialog = false }
 //        )
 //    }
 //
-//    if (showUpdateProfesorDialog) {
-//        UpdateProfesorDialog(
-//            profesor = profesor,
-//            onProfesorUpdated = { profesor ->
-//                updateProfesor(profesor)
-//                showUpdateProfesorDialog = false
+//    if (showUpdateMovimientoDialog) {
+//        UpdateMovimientoDialog(
+//            movimiento = movimiento,
+//            onMovimientoUpdated = { movimiento ->
+//                updateMovimiento(movimiento)
+//                showUpdateMovimientoDialog = false
 //            },
-//            onDialogDismissed = { showUpdateProfesorDialog = false }
+//            onDialogDismissed = { showUpdateMovimientoDialog = false }
 //        )
 //    }
-//
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp),
-//        elevation = CardDefaults.cardElevation(4.dp)
-//
-//
-//    ) {
-//        Row(modifier = Modifier.padding(16.dp)) {
-//            Column {
-//                Text(text = "Profesor", style = MaterialTheme.typography.titleLarge)
-//                Text(
-//                    text = "Nombre: ${profesor.nombre}",
-//                    style = MaterialTheme.typography.bodySmall
-//                )
-//                Text(
-//                    text = "Apellidos: ${profesor.apellidos}",
-//                    style = MaterialTheme.typography.bodySmall
-//                )
-//                Text(
-//                    text = "Email: ${profesor.email}",
-//                    style = MaterialTheme.typography.bodySmall
-//                )
-//            }
-//        }
-//        Row(
-//            modifier = Modifier
-//                .padding(16.dp)
-//                .align(AbsoluteAlignment.Right)
-//        ) {
-//            IconButton(
-//                onClick = { showUpdateProfesorDialog = true }
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Edit,
-//                    contentDescription = "Actualizar Profesor"
-//                )
-//            }
-//            IconButton(
-//                onClick = { showDeleteProfesorDialog = true }
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Delete,
-//                    contentDescription = "Borrar Profesor"
-//                )
-//            }
-//        }
-//    }
-//}
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+
+
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            Column {
+                Text(text = "Movimiento", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Nombre: ${movimiento.nombre}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "Apellidos: ${movimiento.tipo}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "Email: ${movimiento.clase}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(AbsoluteAlignment.Right)
+        ) {
+            IconButton(
+                onClick = { showUpdateMovimientoDialog = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Actualizar Movimiento"
+                )
+            }
+            IconButton(
+                onClick = { showDeleteMovimientoDialog = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Borrar Movimiento"
+                )
+            }
+        }
+    }
+}

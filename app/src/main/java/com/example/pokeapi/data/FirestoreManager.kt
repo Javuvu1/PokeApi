@@ -1,5 +1,7 @@
 package com.example.pokeapi.data
 
+import com.example.pokeapi.model.Movimiento
+import com.example.pokeapi.model.MovimientoDB
 import com.example.pokeapi.model.PokemonDB
 import com.example.pokeapi.model.Pokemon
 import com.google.firebase.firestore.snapshots
@@ -15,7 +17,48 @@ class FirestoreManager(auth: AuthManager, context: android.content.Context) {
 
     companion object{
         private const val COLLECTION_POKEMON = "pokemon"
+        private const val COLLECTION_MOVIMIENTOS = "movimientos"
     }
+
+    //    Funciones de los movimientos
+    fun getMovimientoByPokemonId(pokemonId: String): Flow<List<Movimiento>> {
+        return firestore.collection(COLLECTION_MOVIMIENTOS)
+            .whereEqualTo("pokemonId", pokemonId)
+            .snapshots()
+            .map { qs ->
+                qs.documents.mapNotNull { ds ->
+                    ds.toObject(MovimientoDB::class.java)?.let { movimientoDB ->
+                        Movimiento(
+                            id = ds.id,
+                            pokemonId = movimientoDB.pokemonId,
+                            userId = movimientoDB.userId,
+                            nombre = movimientoDB.nombre,
+                            tipo = movimientoDB.tipo,
+                            clase = movimientoDB.clase,
+                            potencia = movimientoDB.potencia,
+                            precision = movimientoDB.precision,
+                            pp = movimientoDB.pp,
+                        )
+                    }
+                }
+            }
+    }
+
+    suspend fun addMovimiento(movimiento: Movimiento) {
+        firestore.collection(COLLECTION_MOVIMIENTOS).add(movimiento).await()
+    }
+
+    suspend fun updateMovimiento(movimiento: Movimiento) {
+        val movimientoRef = movimiento.id?.let {
+            firestore.collection(COLLECTION_MOVIMIENTOS).document(it)
+        }
+        movimientoRef?.set(movimiento)?.await()
+    }
+
+    suspend fun deleteMovimientoById(movimientoId: String) {
+        firestore.collection("Movimientos").document(movimientoId).delete().await()
+    }
+
 
     //    Funciones de los pokemon
     fun getPokemon(): Flow<List<Pokemon>> {

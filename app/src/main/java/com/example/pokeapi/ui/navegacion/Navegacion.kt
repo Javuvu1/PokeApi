@@ -2,9 +2,12 @@ package com.example.pokeapi.ui.navegacion
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.pokeapi.crud.ScreenDetalle
 import com.example.pokeapi.crud.ScreenInicio
 import com.example.pokeapi.data.FirestoreManager
 import com.example.pokeapi.ui.AuthManager
@@ -64,10 +67,19 @@ fun Navegacion(auth: AuthManager) {
             )
         }
 
-        composable("screenDetalle/{id}") { backStackEntry ->
+        // En Navegacion.kt
+        composable(
+            route = Screen.ScreenDetalle.route, // Usa la ruta de la clase Screen
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
-            // Aquí llamarías a tu ScreenDetalle con el ID obtenido
-            // ScreenDetalle(id, auth, firestore, { ... })
+            // Reemplaza esto con tu composable ScreenDetalle real
+            ScreenDetalle(
+                id = id,
+                auth = auth,
+                firestore = firestore,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
