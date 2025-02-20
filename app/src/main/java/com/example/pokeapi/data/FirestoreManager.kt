@@ -56,7 +56,7 @@ class FirestoreManager(auth: AuthManager, context: android.content.Context) {
     }
 
     suspend fun deleteMovimientoById(movimientoId: String) {
-        firestore.collection("Movimientos").document(movimientoId).delete().await()
+        firestore.collection("movimientos").document(movimientoId).delete().await()
     }
 
 
@@ -67,19 +67,19 @@ class FirestoreManager(auth: AuthManager, context: android.content.Context) {
             .snapshots()
             .map { qs ->
                 qs.documents.mapNotNull { ds ->
-                    ds.toObject(PokemonDB::class.java)?.let { PokamionDB ->
+                    ds.toObject(PokemonDB::class.java)?.let { pokemonDB ->
                         Pokemon(
                             id = ds.id,
-                            userId = PokamionDB.userId,
-                            name = PokamionDB.name,
-                            tipo1 = PokamionDB.tipo1,
-                            tipo2 = PokamionDB.tipo2,
-                            hp = PokamionDB.hp,
-                            atk = PokamionDB.atk,
-                            def = PokamionDB.def,
-                            spatk = PokamionDB.spatk,
-                            spdef = PokamionDB.spdef,
-                            speed = PokamionDB.speed,
+                            userId = pokemonDB.userId,
+                            name = pokemonDB.name,
+                            tipo1 = pokemonDB.tipo1,
+                            tipo2 = pokemonDB.tipo2,
+                            hp = pokemonDB.hp,
+                            atk = pokemonDB.atk,
+                            def = pokemonDB.def,
+                            spatk = pokemonDB.spatk,
+                            spdef = pokemonDB.spdef,
+                            speed = pokemonDB.speed,
                         )
                     }
                 }

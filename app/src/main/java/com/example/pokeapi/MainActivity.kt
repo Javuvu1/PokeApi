@@ -20,13 +20,11 @@ import java.io.InputStream
 
 class MainActivity : ComponentActivity() {
     val auth = AuthManager(this)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Navegacion(auth)
         }
-
 
     }
 
@@ -34,5 +32,4 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         auth.signOut()
     }
-
 }

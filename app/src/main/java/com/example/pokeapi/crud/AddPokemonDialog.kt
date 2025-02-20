@@ -64,6 +64,7 @@ fun AddPokemonDialog(
             Button(
                 onClick = {
                     val newPokemon = Pokemon(
+                        id = "",
                         userId = auth.getCurrentUser()?.uid,
                         name = name,
                         tipo1 = tipo1,
@@ -129,7 +130,8 @@ fun AddPokemonDialog(
                     )
                     DropdownMenu(
                         expanded = expandedTipo1,
-                        onDismissRequest = { expandedTipo1 = false }
+                        onDismissRequest = { expandedTipo1 = false },
+                        modifier = Modifier.height(250.dp)
                     ) {
                         tiposPokemon.forEach { tipo ->
                             DropdownMenuItem(
@@ -163,7 +165,8 @@ fun AddPokemonDialog(
                     )
                     DropdownMenu(
                         expanded = expandedTipo2,
-                        onDismissRequest = { expandedTipo2 = false }
+                        onDismissRequest = { expandedTipo2 = false },
+                        modifier = Modifier.height(250.dp)
                     ) {
                         tiposPokemon.forEach { tipo ->
                             DropdownMenuItem(

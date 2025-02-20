@@ -2,13 +2,12 @@ package com.example.pokeapi.ui.navegacion
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.pokeapi.crud.ScreenDetalle
-import com.example.pokeapi.crud.ScreenInicio
+import androidx.navigation.toRoute
+import com.example.pokeapi.ui.screen.ScreenDetalle
+import com.example.pokeapi.ui.screen.ScreenInicio
 import com.example.pokeapi.data.FirestoreManager
 import com.example.pokeapi.ui.AuthManager
 import com.example.pokeapi.ui.screen.ForgotPasswordScreen
@@ -23,63 +22,59 @@ fun Navegacion(auth: AuthManager) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = login
     ) {
-        composable(Screen.Login.route) {
+        composable<login> {
             LoginScreen(
                 auth,
-                { navController.navigate(Screen.SignUp.route) },
+                { navController.navigate(signUp) },
                 {
-                    navController.navigate(Screen.ScreenInicio.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+                    navController.navigate(screenInicio) {
+                        popUpTo(login) { inclusive = true }
                     }
                 },
-                { navController.navigate(Screen.ForgotPassword.route) }
+                { navController.navigate(forgotPassword) }
             )
         }
-
-        composable(Screen.SignUp.route) {
-            SignUpScreen(auth) {
-                navController.popBackStack()
-            }
+        composable<signUp> {
+            SignUpScreen(
+                auth
+            ) { navController.popBackStack() }
         }
 
-        composable(Screen.ForgotPassword.route) {
-            ForgotPasswordScreen(auth) {
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Login.route) { inclusive = true }
+        composable<forgotPassword> {
+            ForgotPasswordScreen(
+                auth
+            ) {
+                navController.navigate(login) {
+                    popUpTo(login) { inclusive = true }
                 }
             }
         }
 
-        composable(Screen.ScreenInicio.route) {
+        composable<screenInicio> {
             ScreenInicio(
                 auth,
                 firestore,
                 {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.ScreenInicio.route) { inclusive = true }
+                    navController.navigate(login) {
+                        popUpTo(screenInicio) { inclusive = true }
                     }
                 },
                 { id ->
-                    navController.navigate(Screen.ScreenDetalle.createRoute(id))
+                    navController.navigate(screenDetalle(id))
                 }
             )
         }
 
-        // En Navegacion.kt
-        composable(
-            route = Screen.ScreenDetalle.route, // Usa la ruta de la clase Screen
-            arguments = listOf(navArgument("id") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id") ?: ""
-            // Reemplaza esto con tu composable ScreenDetalle real
-            ScreenDetalle(
-                id = id,
-                auth = auth,
-                firestore = firestore,
-                onBack = { navController.popBackStack() }
-            )
+        composable<screenDetalle> { backStackEntry ->
+            val detalle = backStackEntry.toRoute<screenDetalle>()
+            val id = detalle.id
+            ScreenDetalle(id, auth, firestore, {
+                navController.navigate(login) {
+                    popUpTo(screenInicio) { inclusive = true }
+                }
+            })
         }
     }
 }

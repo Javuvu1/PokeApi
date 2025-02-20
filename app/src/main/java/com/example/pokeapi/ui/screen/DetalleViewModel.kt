@@ -1,11 +1,10 @@
-package com.example.pokeapi.crud
+package com.example.pokeapi.ui.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.pokeapi.data.FirestoreManager
 import com.example.pokeapi.model.Movimiento
-import com.example.pokeapi.model.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -30,22 +29,22 @@ class DetalleViewModel(val firestoreManager: FirestoreManager, val idPokemon: St
         }
     }
 
-    fun addMovimiento(profesor: Movimiento) {
+    fun addMovimiento(movimiento: Movimiento) {
         viewModelScope.launch {
-            firestoreManager.addMovimiento(profesor)
+            firestoreManager.addMovimiento(movimiento)
         }
     }
 
-    fun updateMovimiento(profesor: Movimiento) {
+    fun updateMovimiento(movimiento: Movimiento) {
         viewModelScope.launch {
-            firestoreManager.updateMovimiento(profesor)
+            firestoreManager.updateMovimiento(movimiento)
         }
     }
 
-    fun deleteMovimientoaById(profesorId: String) {
-        if (profesorId.isEmpty()) return
+    fun deleteMovimientoById(movimientoId: String) {
+        if (movimientoId.isEmpty()) return
         viewModelScope.launch {
-            firestoreManager.deleteMovimientoById(profesorId)
+            firestoreManager.deleteMovimientoById(movimientoId)
         }
     }
 

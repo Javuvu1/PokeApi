@@ -1,14 +1,12 @@
-package com.example.pokeapi.crud
+package com.example.pokeapi.ui.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.pokeapi.data.FirestoreManager
 import com.example.pokeapi.model.Pokemon
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,6 +35,18 @@ class InicioViewModel(val firestoreManager: FirestoreManager) : ViewModel() {
     fun addPokemon(pokemon: Pokemon) {
         viewModelScope.launch {
             firestoreManager.addPokemon(pokemon)
+            // Forzar una recarga de los datos
+            loadPokemon()
+        }
+    }
+
+    private fun loadPokemon() {
+        viewModelScope.launch {
+            firestoreManager.getPokemon().collect { pokemons ->
+                _uiState.update { uiState ->
+                    uiState.copy(pokemons = pokemons)
+                }
+            }
         }
     }
 
